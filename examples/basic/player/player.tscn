@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://drvjqyolmbkrq"]
+[gd_scene load_steps=6 format=3 uid="uid://drvjqyolmbkrq"]
 
 [ext_resource type="Script" path="res://examples/basic/player/player.gd" id="1_uc7eg"]
 [ext_resource type="Texture2D" uid="uid://bikvrge3lfpe5" path="res://icon.svg" id="2_sdwhb"]
+[ext_resource type="Script" path="res://examples/basic/player/input.gd" id="3_p21f0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b6ulp"]
 size = Vector2(128, 128)
@@ -24,3 +25,7 @@ shape = SubResource("RectangleShape2D_b6ulp")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_g13rj")
+
+[node name="Input" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_p21f0")

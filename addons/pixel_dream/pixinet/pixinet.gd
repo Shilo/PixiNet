@@ -16,15 +16,30 @@ static var on_start_failed: Signal:
 
 static var on_start: Signal:
 	get: return events.on_start
-
 static var on_stop: Signal:
 	get: return events.on_stop
-
 static var on_peer_start: Signal:
 	get: return events.on_peer_start
-
 static var on_peer_stop: Signal:
 	get: return events.on_peer_stop
+
+static var on_server_start: Signal:
+	get: return events.on_server_start
+static var on_server_stop: Signal:
+	get: return events.on_server_stop
+static var on_server_peer_start: Signal:
+	get: return events.on_server_peer_start
+static var on_server_peer_stop: Signal:
+	get: return events.on_server_peer_stop
+
+static var on_client_start: Signal:
+	get: return events.on_client_start
+static var on_client_stop: Signal:
+	get: return events.on_client_stop
+static var on_client_peer_start: Signal:
+	get: return events.on_client_peer_start
+static var on_client_peer_stop: Signal:
+	get: return events.on_client_peer_stop
 
 static var log_level: LogLevel = LogLevel.NONE
 
@@ -61,6 +76,10 @@ static var is_server: bool:
 static var is_client: bool:
 	get:
 		return connected && !multiplayer.is_server()
+
+static var is_server_unique_id: bool:
+	get:
+		return connected && multiplayer.get_unique_id() == MultiplayerPeer.TARGET_PEER_SERVER
 
 static var _events: PixiNetEvents
 static var events: PixiNetEvents:
