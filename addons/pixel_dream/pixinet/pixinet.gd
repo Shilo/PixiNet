@@ -56,13 +56,11 @@ static var disconnected: bool:
 
 static var is_server: bool:
 	get:
-		var multiplayer_api := multiplayer
-		return multiplayer_api && multiplayer_api.is_server()
+		return connected && multiplayer.is_server()
 
 static var is_client: bool:
 	get:
-		var multiplayer_api := multiplayer
-		return multiplayer_api && !multiplayer_api.is_server()
+		return connected && !multiplayer.is_server()
 
 static var _events: PixiNetEvents
 static var events: PixiNetEvents:
