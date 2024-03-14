@@ -3,6 +3,8 @@ extends Example
 func _ready() -> void:
 	super._ready()
 	
+	PixiNet.log_info("Connecting...", "", true)
+	
 	var host_error = PixiNet.start_server(port)
 	PixiNet.log_level = PixiNet.LogLevel.WARN
 	

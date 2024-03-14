@@ -1,5 +1,4 @@
 class_name Example extends Node
-const CLASS_NAME = "Example"
 
 @export var address: String = PixiNet.DEFAULT_ADDRESS
 @export var port: int = PixiNet.DEFAULT_PORT
@@ -50,19 +49,19 @@ func position_window() -> void:
 	get_window().position = position
 
 func _on_start_failed(error: Error) -> void:
-	PixiNet.log_error("%s failed to start. Error = %d." % [_peer_type_name(), error], CLASS_NAME, false)
+	PixiNet.log_error("%s failed to start. Error = %d." % [_peer_type_name(), error], "", false)
 
 func _on_start(id: int) -> void:
-	PixiNet.log_info("%s started. ID = %d." % [_peer_type_name(id), id], CLASS_NAME, true)
+	PixiNet.log_info("%s started. ID = %d." % [_peer_type_name(id), id], "", true)
 
 func _on_stop(id: int) -> void:
-	PixiNet.log_info("%s stopped. ID = %d." % [_peer_type_name(id), id], CLASS_NAME, true)
+	PixiNet.log_info("%s stopped. ID = %d." % [_peer_type_name(id), id], "", true)
 
 func _on_peer_start(id: int) -> void:
-	PixiNet.log_info("Peer started. ID = %d." % id, CLASS_NAME, true)
+	PixiNet.log_info("Peer started. ID = %d." % id, "", true)
 
 func _on_peer_stop(id: int) -> void:
-	PixiNet.log_info("Peer stopped. ID = %d." % id, CLASS_NAME, true)
+	PixiNet.log_info("Peer stopped. ID = %d." % id, "", true)
 
 func _peer_type_name(id: int = 0) -> String:
 	return "Server" if id == MultiplayerPeer.TARGET_PEER_SERVER || PixiNet.is_server else "Client"
