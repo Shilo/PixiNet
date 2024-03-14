@@ -19,11 +19,10 @@ var _was_server_connected: bool = false
 var _server_connected: bool:
 	get:
 		return PixiNet.is_server && PixiNet.connected
-		
-func _init() -> void:
-	update()
 
 func _ready():
+	if _processing:
+		update()
 	set_process(_processing)
 
 func _process(delta: float) -> void:
