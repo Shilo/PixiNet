@@ -4,13 +4,21 @@ extends Node2D
 @export var PORT: int = PixiNet.DEFAULT_PORT
 
 func _ready() -> void:
+	var hosting = host()
+	
 	PixiNet.log_level = PixiNet.LogLevel.INFO
-	if !host():
+	
+	if !hosting:
 		join()
 
 func host() -> bool:
 	var error := PixiNet.start_server(PORT)
-	return error == OK
+	
+	var success := error == OK
+	if success:
+		PixiNet.log("Started server. Port = %s." % PORT, PixiNetENetMultiplayerPeer.CLASS_NAME, PixiNet.LogLevel.INFO, true)
 
-func join():
+	return success
+
+func join() -> void:
 	return PixiNet.start_client(IP_ADDRESS, PORT)

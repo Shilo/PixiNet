@@ -53,8 +53,8 @@ static func start_client(address: String = DEFAULT_ADDRESS, port: int = DEFAULT_
 static func is_online_peer(peer: MultiplayerPeer) -> bool:
 	return peer && !(peer is OfflineMultiplayerPeer)
 
-static func log(message: String, subject: String = CLASS_NAME, level: LogLevel = LogLevel.INFO) -> void:
-	if level > log_level: return
+static func log(message: String, subject: String = CLASS_NAME, level: LogLevel = LogLevel.INFO, force: bool = false) -> void:
+	if !force && level > log_level: return
 	
 	if !subject.is_empty():
 		message = "[%s] %s" % [subject, message]
