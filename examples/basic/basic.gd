@@ -16,16 +16,22 @@ func host() -> bool:
 	var success := error == OK
 	if success:
 		PixiNet.log("Started server. Port = %s." % port, PixiNetENetMultiplayerPeer.CLASS_NAME, PixiNet.LogLevel.INFO, true)
-		add_player(multiplayer.get_unique_id())
 
 	return success
 
 func join() -> void:
 	return PixiNet.start_client(address, port)
 
-func _on_start() -> void:
-	PixiNet.log("_on_start", "Basic")
+func _on_start(id: int) -> void:
+	print("_on_start: %d" % id)
+	add_player(id)
 
 func _on_stop() -> void:
-	PixiNet.log("_on_stop", "Basic")
+	print("_on_stop")
 	remove_players()
+
+func _on_peer_start(id: int) -> void:
+	print("_on_peer_start: %d" % id)
+
+func _on_peer_stop(id: int) -> void:
+	print("_on_peer_stop: %d" % id)

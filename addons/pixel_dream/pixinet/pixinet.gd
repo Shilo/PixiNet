@@ -11,14 +11,20 @@ enum LogLevel {
 	INFO
 }
 
-static var on_start: Signal:
-	get: return events.on_start
-
 static var on_start_failed: Signal:
 	get: return events.on_start_failed
 
+static var on_start: Signal:
+	get: return events.on_start
+
 static var on_stop: Signal:
 	get: return events.on_stop
+
+static var on_peer_start: Signal:
+	get: return events.on_peer_start
+
+static var on_peer_stop: Signal:
+	get: return events.on_peer_stop
 
 static var log_level: LogLevel = LogLevel.NONE
 
@@ -47,6 +53,16 @@ static var disconnected: bool:
 		var peer := multiplayer.multiplayer_peer
 		if !is_online_peer(peer): return true
 		return peer.get_connection_status() == MultiplayerPeer.CONNECTION_DISCONNECTED
+
+static var is_server: bool:
+	get:
+		var multiplayer_api := multiplayer
+		return multiplayer_api && multiplayer_api.is_server()
+
+static var is_client: bool:
+	get:
+		var multiplayer_api := multiplayer
+		return multiplayer_api && !multiplayer_api.is_server()
 
 static var _events: PixiNetEvents
 static var events: PixiNetEvents:

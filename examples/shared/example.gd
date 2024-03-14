@@ -10,6 +10,8 @@ var players: Dictionary = {}
 func _ready() -> void:
 	PixiNet.on_start.connect(_on_start)
 	PixiNet.on_stop.connect(_on_stop)
+	PixiNet.on_peer_start.connect(_on_peer_start)
+	PixiNet.on_peer_stop.connect(_on_peer_stop)
 	
 	if reposition_window:
 		position_window()
@@ -47,8 +49,14 @@ func position_window() -> void:
 	position.x += int(window_size.x * offset_direction / 2.0)
 	get_window().position = position
 
-func _on_start() -> void:
+func _on_start(_id: int) -> void:
 	pass
 
 func _on_stop() -> void:
+	pass
+
+func _on_peer_start(_id: int) -> void:
+	pass
+
+func _on_peer_stop(_id: int) -> void:
 	pass
