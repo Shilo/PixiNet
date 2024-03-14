@@ -8,8 +8,11 @@ class_name Example extends Node
 var players: Dictionary = {}
 
 func _ready() -> void:
+	PixiNet.on_connected.connect(_on_connected)
+	PixiNet.on_disconnected.connect(_on_disconnected)
+	
 	if reposition_window:
-		position_window(multiplayer.is_server())
+		position_window()
 
 func add_player(id: int) -> void:
 	var player := player_scene.instantiate()
@@ -27,7 +30,15 @@ func remove_player(id: int) -> void:
 	players.erase(id)
 	player.queue_free()
 
-func position_window(hosting: bool) -> void:
+func remove_players() -> void:
+	for player in players:
+		player.queue_free()
+	players.clear()
+
+func position_window() -> void:
+	await get_tree().process_frame
+	
+	var hosting := multiplayer.is_server()
 	var screen_size: Vector2i = DisplayServer.screen_get_size()
 	var window_size: Vector2i = DisplayServer.window_get_size_with_decorations(get_window().get_window_id())
 	var offset_direction: int = -1 if hosting else 1
@@ -35,3 +46,9 @@ func position_window(hosting: bool) -> void:
 	var position: Vector2i = (screen_size - window_size) / 2.0
 	position.x += int(window_size.x * offset_direction / 2.0)
 	get_window().position = position
+
+func _on_connected() -> void:
+	pass
+
+func _on_disconnected() -> void:
+	pass
