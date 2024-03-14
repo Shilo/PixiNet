@@ -1,12 +1,13 @@
 class_name PixiNetEvents extends Node
 
-signal on_start_failed
+signal on_start_failed(error: Error)
 signal on_start(id: int)
-signal on_stop
+signal on_stop(id: int)
 signal on_peer_start(id: int)
 signal on_peer_stop(id: int)
 
 var _multiplayer: MultiplayerAPI
+var _unique_id: int
 
 var _processing: bool = true
 var processing: bool:
@@ -37,9 +38,9 @@ func update() -> void:
 	var server_connected := _server_connected
 	if server_connected != _was_server_connected:
 		if server_connected:
-			on_start.emit(multiplayer.get_unique_id())
+			_emit_on_start()
 		else:
-			on_stop.emit()
+			_emit_on_stop()
 		_was_server_connected = server_connected
 
 func add_events(multiplayer_api: MultiplayerAPI) -> void:
@@ -61,16 +62,28 @@ func remove_events(multiplayer_api: MultiplayerAPI) -> void:
 	multiplayer_api.peer_disconnected.disconnect(_on_peer_disconnected)
 
 func _on_connection_failed() -> void:
-	on_start_failed.emit()
+	on_start_failed.emit(ERR_CONNECTION_ERROR)
 
 func _on_connected_to_server() -> void:
-	on_start.emit(multiplayer.get_unique_id())
+	_emit_on_start()
 
 func _on_server_disconnect() -> void:
-	on_stop.emit()
+	_emit_on_stop()
 
 func _on_peer_connected(peer_id: int) -> void:
 	on_peer_start.emit(peer_id)
 
 func _on_peer_disconnected(peer_id: int) -> void:
 	on_peer_stop.emit(peer_id)
+
+func _emit_on_start() -> void:
+	if _unique_id != 0: return # Start event has already been emitted
+	
+	_unique_id = multiplayer.get_unique_id()
+	on_start.emit(_unique_id)
+
+func _emit_on_stop() -> void:
+	if _unique_id == 0: return # Stop event has already been emitted
+	
+	on_stop.emit(_unique_id)
+	_unique_id = 0

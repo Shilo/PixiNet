@@ -82,13 +82,18 @@ static func start_server(port: int = DEFAULT_PORT, max_clients: int = 32, max_ch
 	return result.error
 
 static func start_client(address: String = DEFAULT_ADDRESS, port: int = DEFAULT_PORT, channel_count: int = 0, in_bandwidth: int = 0, out_bandwidth: int = 0, local_port: int = 0) -> Error:
-	pass
 	var result: Dictionary = PixiNetENetMultiplayerPeer.start_client(address, port, channel_count, in_bandwidth, out_bandwidth, local_port)
 	multiplayer.multiplayer_peer = result.peer if !result.error else OfflineMultiplayerPeer.new()
 	return result.error
 
 static func stop():
-	multiplayer.multiplayer_peer.close()
+	var peer = multiplayer.multiplayer_peer
+	
+	if peer is PixiNetENetMultiplayerPeer:
+		peer.stop()
+		return
+	
+	peer.close()
 
 static func is_online_peer(peer: MultiplayerPeer) -> bool:
 	return peer && !(peer is OfflineMultiplayerPeer)
@@ -107,8 +112,11 @@ static func log(message: String, subject: String = CLASS_NAME, level: LogLevel =
 		LogLevel.ERROR:
 			push_error(message)
 
-static func log_warn(message: String, subject: String = CLASS_NAME) -> void:
-	PixiNet.log(message, subject, LogLevel.WARN)
+static func log_info(message: String, subject: String = CLASS_NAME, force: bool = false) -> void:
+	PixiNet.log(message, subject, LogLevel.INFO, force)
 
-static func log_error(message: String, subject: String = CLASS_NAME) -> void:
-	PixiNet.log(message, subject, LogLevel.ERROR)
+static func log_warn(message: String, subject: String = CLASS_NAME, force: bool = false) -> void:
+	PixiNet.log(message, subject, LogLevel.WARN, force)
+
+static func log_error(message: String, subject: String = CLASS_NAME, force: bool = false) -> void:
+	PixiNet.log(message, subject, LogLevel.ERROR, force)
