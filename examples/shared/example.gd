@@ -20,7 +20,7 @@ func _ready() -> void:
 func add_player(id: int) -> void:
 	var player := player_scene.instantiate()
 	player.name += " #%d" % id
-	player.get_node("%Input").set_multiplayer_authority(id)
+	player.id = id
 	add_child(player)
 	
 	players[id] = player

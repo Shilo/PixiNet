@@ -2,18 +2,28 @@ extends CharacterBody2D
 
 @export var speed = 300.0
 
-func _enter_tree() -> void:
-	auth_set_position()
+var id: int:
+	set(value):
+		id = value
+		input.set_multiplayer_authority(id)
 
-#func _physics_process(_delta: float) -> void:
-	#velocity = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down") * speed
-	#move_and_slide()
+var input: InputSynchronizer:
+	get: return %InputSynchronizer
+
+func _ready() -> void:
+	auth_set_position()
+	if input.is_multiplayer_authority():
+		%Sprite.modulate = Color.GREEN
+
+func _physics_process(_delta: float) -> void:
+	velocity = input.movement * speed
+	move_and_slide()
 
 func auth_set_position():
 	if !is_multiplayer_authority(): return
 	
 	var window_size = get_viewport_rect().size
-	var sprite_half_size = (%Sprite as Sprite2D).texture.get_size() / 2
+	var sprite_half_size = %Sprite.texture.get_size() / 2
 	
 	position = Vector2i(
 		randi_range(sprite_half_size.x, window_size.x - sprite_half_size.x),
