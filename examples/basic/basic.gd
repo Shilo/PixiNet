@@ -1,7 +1,4 @@
-extends Node2D
-
-@export var IP_ADDRESS: String = PixiNet.DEFAULT_ADDRESS
-@export var PORT: int = PixiNet.DEFAULT_PORT
+extends Example
 
 func _ready() -> void:
 	var hosting = host()
@@ -10,15 +7,18 @@ func _ready() -> void:
 	
 	if !hosting:
 		join()
+	
+	super._ready()
 
 func host() -> bool:
-	var error := PixiNet.start_server(PORT)
+	var error := PixiNet.start_server(port)
 	
 	var success := error == OK
 	if success:
-		PixiNet.log("Started server. Port = %s." % PORT, PixiNetENetMultiplayerPeer.CLASS_NAME, PixiNet.LogLevel.INFO, true)
+		PixiNet.log("Started server. Port = %s." % port, PixiNetENetMultiplayerPeer.CLASS_NAME, PixiNet.LogLevel.INFO, true)
+		add_player(multiplayer.get_unique_id())
 
 	return success
 
 func join() -> void:
-	return PixiNet.start_client(IP_ADDRESS, PORT)
+	return PixiNet.start_client(address, port)
