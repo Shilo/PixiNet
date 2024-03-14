@@ -14,9 +14,18 @@ func _ready() -> void:
 func _on_start(id: int) -> void:
 	super._on_start(id)
 	
-	add_player(id)
+	#if is_multiplayer_authority():
+		#add_player(id)
 
 func _on_stop(id: int) -> void:
 	super._on_stop(id)
 	
 	remove_players()
+
+func _on_peer_start(id: int) -> void:
+	super._on_peer_start(id)
+	
+	add_player(id)
+
+func _on_peer_stop(id: int) -> void:
+	super._on_peer_stop(id)
