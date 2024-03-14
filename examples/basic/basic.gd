@@ -23,9 +23,9 @@ func host() -> bool:
 func join() -> void:
 	return PixiNet.start_client(address, port)
 
-func _on_connected() -> void:
-	PixiNet.log("on connected", "Basic")
+func _on_start() -> void:
+	PixiNet.log("_on_start", "Basic")
 
-func _on_disconnected() -> void:
-	PixiNet.log("on DISconnected", "Basic")
+func _on_stop() -> void:
+	PixiNet.log("_on_stop", "Basic")
 	remove_players()

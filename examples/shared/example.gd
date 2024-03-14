@@ -8,8 +8,8 @@ class_name Example extends Node
 var players: Dictionary = {}
 
 func _ready() -> void:
-	PixiNet.on_connected.connect(_on_connected)
-	PixiNet.on_disconnected.connect(_on_disconnected)
+	PixiNet.on_start.connect(_on_start)
+	PixiNet.on_stop.connect(_on_stop)
 	
 	if reposition_window:
 		position_window()
@@ -31,8 +31,8 @@ func remove_player(id: int) -> void:
 	player.queue_free()
 
 func remove_players() -> void:
-	for player in players:
-		player.queue_free()
+	for id in players:
+		players[id].queue_free()
 	players.clear()
 
 func position_window() -> void:
@@ -47,8 +47,8 @@ func position_window() -> void:
 	position.x += int(window_size.x * offset_direction / 2.0)
 	get_window().position = position
 
-func _on_connected() -> void:
+func _on_start() -> void:
 	pass
 
-func _on_disconnected() -> void:
+func _on_stop() -> void:
 	pass

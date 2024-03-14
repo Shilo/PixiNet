@@ -11,14 +11,14 @@ enum LogLevel {
 	INFO
 }
 
-static var on_connection_failed: Signal:
-	get: return events.on_connection_failed
+static var on_start: Signal:
+	get: return events.on_start
 
-static var on_connected: Signal:
-	get: return events.on_connected
+static var on_start_failed: Signal:
+	get: return events.on_start_failed
 
-static var on_disconnected: Signal:
-	get: return events.on_disconnected
+static var on_stop: Signal:
+	get: return events.on_stop
 
 static var log_level: LogLevel = LogLevel.NONE
 
@@ -52,8 +52,15 @@ static var _events: PixiNetEvents
 static var events: PixiNetEvents:
 	get:
 		if !_events:
-			set_event_process(true)
+			_events = PixiNetEvents.new()
+			_events.name = "PixiNetEvents"
+			tree.root.add_child.call_deferred(_events)
 		return _events
+
+static var event_processing: bool:
+	get: return _events && _events.processing
+	set(value):
+		events.processing = value
 
 static func start_server(port: int = DEFAULT_PORT, max_clients: int = 32, max_channels: int = 0, in_bandwidth: int = 0, out_bandwidth: int = 0) -> Error:
 	var result: Dictionary = PixiNetENetMultiplayerPeer.start_server(port, max_clients, max_channels, in_bandwidth, out_bandwidth)
@@ -71,19 +78,7 @@ static func stop():
 
 static func is_online_peer(peer: MultiplayerPeer) -> bool:
 	return peer && !(peer is OfflineMultiplayerPeer)
-
-static func set_event_process(process: bool) -> void:
-	if process && !_events:
-		_events = PixiNetEvents.new()
-		_events.name = "PixiNetEvents"
-		tree.root.add_child.call_deferred(_events)
-	elif !process && _events:
-		var parent := _events.get_parent()
-		if parent:
-			parent.remove_child(_events)
-		_events.queue_free()
-		_events = null
-
+	
 static func log(message: String, subject: String = CLASS_NAME, level: LogLevel = LogLevel.INFO, force: bool = false) -> void:
 	if !force && level > log_level: return
 	
