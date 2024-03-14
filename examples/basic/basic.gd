@@ -4,7 +4,7 @@ func _ready() -> void:
 	super._ready()
 	
 	var host_error = PixiNet.start_server(port)
-	PixiNet.log_level = PixiNet.LogLevel.INFO
+	PixiNet.log_level = PixiNet.LogLevel.WARN
 	
 	if host_error:
 		PixiNet.start_client(address, port)

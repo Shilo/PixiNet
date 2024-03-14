@@ -50,7 +50,7 @@ func position_window() -> void:
 	get_window().position = position
 
 func _on_start_failed(error: Error) -> void:
-	PixiNet.log_error("%s failed to start. Error = %d." % [_peer_type_name(), error], CLASS_NAME, true)
+	PixiNet.log_error("%s failed to start. Error = %d." % [_peer_type_name(), error], CLASS_NAME, false)
 
 func _on_start(id: int) -> void:
 	PixiNet.log_info("%s started. ID = %d." % [_peer_type_name(id), id], CLASS_NAME, true)

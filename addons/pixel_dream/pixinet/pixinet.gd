@@ -104,6 +104,11 @@ static func log(message: String, subject: String = CLASS_NAME, level: LogLevel =
 	if !subject.is_empty():
 		message = "[%s] %s" % [subject, message]
 	
+	if connected:
+		var id := multiplayer.get_unique_id()
+		var socket_name = "Server" if id == MultiplayerPeer.TARGET_PEER_SERVER else "Client"
+		message = "[%s %s] %s" % [socket_name, multiplayer.get_unique_id(), message]
+	
 	match level:
 		LogLevel.INFO:
 			print(message)
