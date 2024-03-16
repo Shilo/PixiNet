@@ -19,18 +19,17 @@ func _on_start(_id: int) -> void:
 func _on_stop(_id: int) -> void:
 	ui.visible = true
 
-#
-#func _on_server_start(id: int) -> void:
-#	super._on_server_start(id)
-#	
-#	add_player(id)
-#
-#func _on_server_peer_start(id: int) -> void:
-#	super._on_server_peer_start(id)
-#	
-#	add_player(id)
-#
-#func _on_server_peer_stop(id: int) -> void:
-#	super._on_server_peer_stop(id)
-#	
-#	remove_player(id)
+func _on_server_start(id: int) -> void:
+	super._on_server_start(id)
+	
+	add_player(id)
+
+func _on_server_peer_start(id: int) -> void:
+	super._on_server_peer_start(id)
+	
+	add_player(id)
+
+func _on_server_peer_stop(id: int) -> void:
+	super._on_server_peer_stop(id)
+	
+	remove_player(id)
