@@ -22,6 +22,10 @@ static var on_peer_start: Signal:
 	get: return events.on_peer_start
 static var on_peer_stop: Signal:
 	get: return events.on_peer_stop
+static var on_peer_authenticating: Signal:
+	get: return events.on_peer_authenticating
+static var on_peer_authentication_failed: Signal:
+	get: return events.on_peer_authentication_failed
 
 static var on_server_start: Signal:
 	get: return events.on_server_start
@@ -31,6 +35,10 @@ static var on_server_peer_start: Signal:
 	get: return events.on_server_peer_start
 static var on_server_peer_stop: Signal:
 	get: return events.on_server_peer_stop
+static var on_server_peer_authenticating: Signal:
+	get: return events.on_server_peer_authenticating
+static var on_server_peer_authentication_failed: Signal:
+	get: return events.on_server_peer_authentication_failed
 
 static var on_client_start: Signal:
 	get: return events.on_client_start
@@ -40,10 +48,14 @@ static var on_client_peer_start: Signal:
 	get: return events.on_client_peer_start
 static var on_client_peer_stop: Signal:
 	get: return events.on_client_peer_stop
+static var on_client_peer_authenticating: Signal:
+	get: return events.on_client_peer_authenticating
+static var on_client_peer_authentication_failed: Signal:
+	get: return events.on_client_peer_authentication_failed
 
 static var log_level: LogLevel = LogLevel.NONE
 
-static var multiplayer: MultiplayerAPI:
+static var multiplayer: SceneMultiplayer:
 	get: return tree.get_multiplayer()
 	set(value):
 		tree.set_multiplayer(value)
@@ -104,6 +116,14 @@ static func start_client(address: String = DEFAULT_ADDRESS, port: int = DEFAULT_
 	var result: Dictionary = PixiNetENetMultiplayerPeer.start_client(address, port, channel_count, in_bandwidth, out_bandwidth, local_port)
 	multiplayer.multiplayer_peer = result.peer if !result.error else OfflineMultiplayerPeer.new()
 	return result.error
+
+static func start_server_or_client(server_address: String = DEFAULT_ADDRESS, port: int = DEFAULT_PORT, server_max_clients: int = 32, max_channels: int = 0, in_bandwidth: int = 0, out_bandwidth: int = 0, client_local_port: int = 0) -> Error:
+	var error := PixiNet.start_server(port, server_max_clients, max_channels, in_bandwidth, out_bandwidth)
+	
+	if error:
+		error = PixiNet.start_client(server_address, port, max_channels, in_bandwidth, out_bandwidth, client_local_port)
+	
+	return error
 
 static func stop():
 	var peer = multiplayer.multiplayer_peer

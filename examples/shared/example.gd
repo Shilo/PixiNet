@@ -8,12 +8,16 @@ class_name Example extends Node
 var players: Dictionary = {}
 
 func _ready() -> void:
+	PixiNet.on_peer_authenticating.connect(_on_peer_authenticating)
+	PixiNet.on_peer_authentication_failed.connect(_on_peer_authentication_failed)
 	PixiNet.on_start_failed.connect(_on_start_failed)
 	PixiNet.on_start.connect(_on_start)
 	PixiNet.on_stop.connect(_on_stop)
 	PixiNet.on_server_start.connect(_on_server_start)
 	PixiNet.on_server_peer_start.connect(_on_server_peer_start)
 	PixiNet.on_server_peer_stop.connect(_on_server_peer_stop)
+	
+	PixiNet.log_level = PixiNet.LogLevel.WARN
 	
 	if reposition_window:
 		position_window()
@@ -64,6 +68,12 @@ func _on_server_peer_start(id: int) -> void:
 
 func _on_server_peer_stop(id: int) -> void:
 	PixiNet.log_info("Peer stopped. ID = %d." % id, "", true)
+
+func _on_peer_authenticating(id: int) -> void:
+	PixiNet.log_info("Peer authenticating. ID = %d." % id, "", true)
+
+func _on_peer_authentication_failed(id: int) -> void:
+	PixiNet.log_error("Peer authentication failed. ID = %d." % id, "", true)
 
 func _peer_type_name(is_server: bool) -> String:
 	return "Server" if is_server else "Client"

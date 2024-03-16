@@ -7,16 +7,22 @@ signal on_start(id: int)
 signal on_stop(id: int)
 signal on_peer_start(id: int)
 signal on_peer_stop(id: int)
+signal on_peer_authenticating(id: int)
+signal on_peer_authentication_failed(id: int)
 
 signal on_server_start(id: int)
 signal on_server_stop(id: int)
 signal on_server_peer_start(id: int)
 signal on_server_peer_stop(id: int)
+signal on_server_peer_authenticating(id: int)
+signal on_server_peer_authentication_failed(id: int)
 
 signal on_client_start(id: int)
 signal on_client_stop(id: int)
 signal on_client_peer_start(id: int)
 signal on_client_peer_stop(id: int)
+signal on_client_peer_authenticating(id: int)
+signal on_client_peer_authentication_failed(id: int)
 
 var _multiplayer: MultiplayerAPI
 var _unique_id: int
@@ -55,7 +61,7 @@ func update() -> void:
 			_emit_on_stop()
 		_was_server_connected = server_connected
 
-func add_events(multiplayer_api: MultiplayerAPI) -> void:
+func add_events(multiplayer_api: SceneMultiplayer) -> void:
 	if !multiplayer_api: return
 	
 	multiplayer_api.connection_failed.connect(_on_connection_failed)
@@ -63,6 +69,11 @@ func add_events(multiplayer_api: MultiplayerAPI) -> void:
 	multiplayer_api.server_disconnected.connect(_on_server_disconnect)
 	multiplayer_api.peer_connected.connect(_on_peer_connected)
 	multiplayer_api.peer_disconnected.connect(_on_peer_disconnected)
+	
+	if multiplayer_api is SceneMultiplayer:
+		var scene_multiplayer: SceneMultiplayer = multiplayer_api
+		scene_multiplayer.peer_authenticating.connect(_on_peer_authenticating)
+		scene_multiplayer.peer_authentication_failed.connect(_on_peer_authentication_failed)
 
 func remove_events(multiplayer_api: MultiplayerAPI) -> void:
 	if !multiplayer_api: return
@@ -72,6 +83,11 @@ func remove_events(multiplayer_api: MultiplayerAPI) -> void:
 	multiplayer_api.server_disconnected.disconnect(_on_server_disconnect)
 	multiplayer_api.peer_connected.disconnect(_on_peer_connected)
 	multiplayer_api.peer_disconnected.disconnect(_on_peer_disconnected)
+	
+	if multiplayer_api is SceneMultiplayer:
+		var scene_multiplayer: SceneMultiplayer = multiplayer_api
+		scene_multiplayer.peer_authenticating.disconnect(_on_peer_authenticating)
+		scene_multiplayer.peer_authentication_failed.disconnect(_on_peer_authentication_failed)
 
 func _on_connection_failed() -> void:
 	on_start_failed.emit(ERR_CONNECTION_ERROR, false)
@@ -89,6 +105,14 @@ func _on_peer_connected(peer_id: int) -> void:
 func _on_peer_disconnected(peer_id: int) -> void:
 	on_peer_stop.emit(peer_id)
 	(on_server_peer_stop if PixiNet.is_server_unique_id else on_client_peer_stop).emit(peer_id)
+
+func _on_peer_authenticating(peer_id: int) -> void:
+	on_peer_authenticating.emit(peer_id)
+	(on_server_peer_authenticating if PixiNet.is_server_unique_id else on_client_peer_authenticating).emit(peer_id)
+
+func _on_peer_authentication_failed(peer_id: int) -> void:
+	on_peer_authentication_failed.emit(peer_id)
+	(on_server_peer_authentication_failed if PixiNet.is_server_unique_id else on_client_peer_authentication_failed).emit(peer_id)
 
 func _emit_on_start() -> void:
 	if _unique_id != 0: return # Start event has already been emitted

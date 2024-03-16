@@ -1,5 +1,7 @@
 extends Example
 
+@export var auto_start: bool = false
+
 @onready var menu: Control = %Menu
 @onready var hud: Control = %HUD
 @onready var host_button: Button = %Host
@@ -8,9 +10,19 @@ extends Example
 func _ready() -> void:
 	super._ready()
 	
-	PixiNet.log_level = PixiNet.LogLevel.WARN
 	set_menu_visibility(true)
+	#PixiNet.multiplayer.auth_callback = on_authenticate
+	
+	if auto_start:
+		start_server_client()
 
+func start_server_client() -> void:
+	print("YES")
+	host_button.disabled = true
+	join_button.disabled = true
+	
+	PixiNet.start_server_or_client(address, port)
+	
 func _on_host_pressed() -> void:
 	host_button.disabled = true
 	join_button.disabled = false
@@ -61,3 +73,17 @@ func set_menu_visibility(visible: bool) -> void:
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
+
+func _on_peer_authenticating(id: int) -> void:
+	if multiplayer.is_server(): return
+	super._on_peer_authenticating(id)
+	
+	print("=========")
+	PixiNet.log_info("send to id:%s" % id, "Password", true)
+	PixiNet.multiplayer.send_auth(id, ["691"])
+	#multiplayer.complete_auth(peer)
+	
+func on_authenticate(peer: int, data: Variant) -> void:
+	PixiNet.log_info("on_authenticate: %s %s" % [peer, data[0]], "Password", true)
+	multiplayer.complete_auth(peer)
+	print(data)
