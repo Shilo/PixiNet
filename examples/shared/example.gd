@@ -10,6 +10,7 @@ var players: Dictionary = {}
 func _ready() -> void:
 	PixiNet.on_start_failed.connect(_on_start_failed)
 	PixiNet.on_start.connect(_on_start)
+	PixiNet.on_stop.connect(_on_stop)
 	PixiNet.on_server_start.connect(_on_server_start)
 	PixiNet.on_server_peer_start.connect(_on_server_peer_start)
 	PixiNet.on_server_peer_stop.connect(_on_server_peer_stop)
@@ -49,8 +50,8 @@ func position_window() -> void:
 	position.x += int(window_size.x * offset_direction / 2.0)
 	get_window().position = position
 
-func _on_start_failed(error: Error) -> void:
-	PixiNet.log_error("%s failed to start. Error = %d." % [_peer_type_name(), error], "", false)
+func _on_start_failed(error: Error, was_server: bool) -> void:
+	PixiNet.log_error("%s failed to start. Error = %d." % [_peer_type_name(was_server), error], "", false)
 
 func _on_start(id: int) -> void:
 	add_debug_info(id)
@@ -64,9 +65,12 @@ func _on_server_peer_start(id: int) -> void:
 func _on_server_peer_stop(id: int) -> void:
 	PixiNet.log_info("Peer stopped. ID = %d." % id, "", true)
 
-func _peer_type_name(id: int = 0) -> String:
-	return "Server" if id == MultiplayerPeer.TARGET_PEER_SERVER || PixiNet.is_server else "Client"
+func _peer_type_name(is_server: bool) -> String:
+	return "Server" if is_server else "Client"
 
+func _on_stop(_id: int) -> void:
+	pass
+	
 func add_debug_info(id: int) -> void:
 	get_window().title += " #%d" % id
 	

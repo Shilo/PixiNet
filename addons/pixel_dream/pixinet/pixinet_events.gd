@@ -1,6 +1,7 @@
 class_name PixiNetEvents extends Node
+var CLASS_NAME: String = "PixiNetEvents"
 
-signal on_start_failed(error: Error)
+signal on_start_failed(error: Error, was_server: bool)
 
 signal on_start(id: int)
 signal on_stop(id: int)
@@ -73,7 +74,7 @@ func remove_events(multiplayer_api: MultiplayerAPI) -> void:
 	multiplayer_api.peer_disconnected.disconnect(_on_peer_disconnected)
 
 func _on_connection_failed() -> void:
-	on_start_failed.emit(ERR_CONNECTION_ERROR)
+	on_start_failed.emit(ERR_CONNECTION_ERROR, false)
 
 func _on_connected_to_server() -> void:
 	_emit_on_start()
@@ -93,17 +94,29 @@ func _emit_on_start() -> void:
 	if _unique_id != 0: return # Start event has already been emitted
 	
 	_unique_id = multiplayer.get_unique_id()
+	var is_server := _is_server_unique_id(_unique_id)
+	
+	if PixiNet.log_level > PixiNet.LogLevel.NONE:
+		PixiNet.log("%s started." % _peer_type_name(is_server), CLASS_NAME)
 	
 	on_start.emit(_unique_id)
-	(on_server_start if _is_server_unique_id(_unique_id) else on_client_start).emit(_unique_id)
+	(on_server_start if is_server else on_client_start).emit(_unique_id)
 
 func _emit_on_stop() -> void:
 	if _unique_id == 0: return # Stop event has already been emitted
 	
+	var is_server := _is_server_unique_id(_unique_id)
+	
+	if PixiNet.log_level > PixiNet.LogLevel.NONE:
+		PixiNet.log("%s stopped." % _peer_type_name(is_server), CLASS_NAME)
+	
 	on_stop.emit(_unique_id)
-	(on_server_stop if _is_server_unique_id(_unique_id) else on_client_stop).emit(_unique_id)
+	(on_server_stop if is_server else on_client_stop).emit(_unique_id)
 	
 	_unique_id = 0
 
 func _is_server_unique_id(id: int) -> bool:
 	return id == MultiplayerPeer.TARGET_PEER_SERVER
+
+func _peer_type_name(is_server: bool) -> String:
+	return "Server" if is_server else "Client"

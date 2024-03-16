@@ -12,7 +12,7 @@ config_version=5
 
 config/name="PixiNet"
 config/description="Easy Godot multiplayer nodes and tools that work seamlessly with Godot's networking."
-run/main_scene="res://examples/basic/basic.tscn"
+run/main_scene="res://examples/password/password.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
