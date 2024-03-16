@@ -3,3 +3,5 @@
 android/
 
 *.tmp
+
+.idea/.idea.PixiNet.dir/.idea/

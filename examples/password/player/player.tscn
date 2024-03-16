@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3 uid="uid://by0e3qc1jlbkh"]
+
+[ext_resource type="Script" path="res://examples/basic/player/player.gd" id="1_eduju"]
+[ext_resource type="Texture2D" uid="uid://bikvrge3lfpe5" path="res://icon.svg" id="2_sl8fi"]
+[ext_resource type="Script" path="res://examples/basic/player/input_synchronizer.gd" id="3_jubmc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b6ulp"]
+size = Vector2(128, 128)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_g13rj"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:id")
+properties/1/spawn = true
+properties/1/replication_mode = 0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_736ed"]
+properties/0/path = NodePath(".:movement")
+properties/0/spawn = false
+properties/0/replication_mode = 2
+
+[node name="Player" type="CharacterBody2D"]
+position = Vector2(480, 270)
+script = ExtResource("1_eduju")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture = ExtResource("2_sl8fi")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
+shape = SubResource("RectangleShape2D_b6ulp")
+disabled = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_g13rj")
+
+[node name="InputSynchronizer" type="MultiplayerSynchronizer" parent="."]
+unique_name_in_owner = true
+root_path = NodePath(".")
+replication_config = SubResource("SceneReplicationConfig_736ed")
+script = ExtResource("3_jubmc")
