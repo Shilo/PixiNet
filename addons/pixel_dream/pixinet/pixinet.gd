@@ -55,7 +55,7 @@ static var on_client_peer_authentication_failed: Signal:
 
 static var log_level: LogLevel = LogLevel.NONE
 
-static var multiplayer: SceneMultiplayer:
+static var multiplayer: MultiplayerAPI:
 	get: return tree.get_multiplayer()
 	set(value):
 		tree.set_multiplayer(value)

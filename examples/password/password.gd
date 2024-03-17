@@ -6,6 +6,12 @@ extends Example
 @onready var hud: Control = %HUD
 @onready var host_button: Button = %Host
 @onready var join_button: Button = %Join
+@onready var password_edit: LineEdit = %Password
+
+var _password: String
+var password: String:
+	get:
+		return _password if _password else " "
 
 func _ready() -> void:
 	super._ready()
@@ -21,18 +27,24 @@ func _ready() -> void:
 func start_server_client() -> void:
 	host_button.disabled = true
 	join_button.disabled = true
+	password_edit.editable = false
+	_password = password_edit.text
 	
 	PixiNet.start_server_or_client(address, port)
 	
 func _on_host_pressed() -> void:
 	host_button.disabled = true
 	join_button.disabled = false
+	password_edit.editable = false
+	_password = password_edit.text
 	
 	PixiNet.start_server(port)
 
 func _on_join_pressed() -> void:
 	join_button.disabled = true
 	host_button.disabled = false
+	password_edit.editable = false
+	_password = password_edit.text
 	
 	PixiNet.start_client(address, port)
 
@@ -71,17 +83,32 @@ func set_menu_visibility(visible: bool) -> void:
 	hud.visible = !visible
 	host_button.disabled = false
 	join_button.disabled = false
+	password_edit.editable = true
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
 
 func _on_peer_authenticating(id: int) -> void:
 	super._on_peer_authenticating(id)
-	if multiplayer.is_server(): return
+	if multiplayer.is_server():
+		if !_password:
+			multiplayer.complete_auth(id)
+		return
 	
-	PixiNet.multiplayer.send_auth(id, ["691"])
+	PixiNet.multiplayer.send_auth(id, password.to_utf8_buffer())
 	multiplayer.complete_auth(id)
 	
-func on_authenticate(peer: int, data: Variant) -> void:
-	PixiNet.log_info("on_authenticate: %s %s" % [peer, data[0]], "Password", true)
-	multiplayer.complete_auth(peer)
+func on_authenticate(peer: int, data: PackedByteArray) -> void:
+	if !multiplayer.is_server() || !_password: return
+	var password: String = data.get_string_from_ascii()
+	
+	if !_password || password == _password:
+		multiplayer.complete_auth(peer)
+	else:
+		multiplayer.multiplayer_peer.disconnect_peer(peer)
+
+func _on_peer_authentication_failed(id: int) -> void:
+	super._on_peer_authentication_failed(id)
+	if multiplayer.is_server(): return
+	
+	set_menu_visibility(true)
